@@ -26,7 +26,7 @@ ENV TZ="America/New_York"
 
 RUN apt-get -y update \
         && apt-get install -y apt-transport-https gnupg ca-certificates \
-        && echo "deb [ arch=amd64 ] http://downloads.skewed.de/apt bionic main" >> /etc/apt/sources.list \
+        && echo "deb http://downloads.skewed.de/apt bionic main" >> /etc/apt/sources.list \
         && apt-key adv --keyserver keys.openpgp.org --recv-key 612DEFB798507F25 \
         && apt-get -y update \
         && apt-get install -y --no-install-recommends \
@@ -54,14 +54,17 @@ ENV PYTHONPATH "/app:$PYTHONPATH"
 # torch MUST be installed prior to installing torch-geometric.
 # Image size was causing download timeouts when using cuda versions of torch+sparse+geometric
 # Switched to CPU, need to re-think this if GPU is needed.
-        # && pip3 install --no-cache-dir torch-sparse -f https://pytorch-geometric.com/whl/torch-1.9.0+cu111.html \
-        # && pip3 install --no-cache-dir torch-sparse -f https://pytorch-geometric.com/whl/torch-1.9.0+cpu.html \
+# && pip3 install --no-cache-dir torch-sparse -f https://pytorch-geometric.com/whl/torch-1.9.0+cu111.html \
+# && pip3 install --no-cache-dir torch-sparse -f https://pytorch-geometric.com/whl/torch-1.9.0+cpu.html \
 # Note, torch-geometric and it's deps can't be installed in the same
 # pip command...
 RUN pip3 install --upgrade pip \
-        && pip install --no-cache-dir torch==1.9.0+cpu -f https://download.pytorch.org/whl/torch_stable.html \
-        && pip3 install --no-index --no-cache-dir torch-sparse torch-scatter -f https://pytorch-geometric.com/whl/torch-1.9.0+cpu.html \
-        && pip3 install --no-cache-dir torch-geometric==1.7.2 \
+        #&& pip3 install --no-cache-dir torch==1.9.0+cpu -f https://download.pytorch.org/whl/torch_stable.html \
+        && pip3 install --no-cache-dir torch==1.9.0 -f https://download.pytorch.org/whl/torch_stable.html
+
+RUN pip3 install torch-sparse==0.6.12
+RUN pip3 install torch-scatter==2.0.9
+RUN pip3 install --no-cache-dir torch-geometric==1.7.2 \
         && pip3 install cmake \
         && pip3 install cython \
         && pip3 install networkit
